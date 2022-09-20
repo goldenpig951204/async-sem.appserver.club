@@ -3,7 +3,6 @@ const crypto = require('node:crypto');
 const axios = require('axios');
 const Setting = require('../models/setting');
 const Site = require('../models/sites');
-const { resolve } = require('node:path');
 
 /**
  * Display 'not-found' error called 404 when a request doesn't match to any routes.
@@ -131,7 +130,10 @@ const getMembership = (uid, lid, siteUrl) => {
                 resolve(0);
             }
             axios.get(`${siteUrl}/wp-content/plugins/indeed-membership-pro/apigate.php?ihch=${site.membershipApiKey}&action=verify_user_level&uid=${uid}&lid=${lid}`)
-                .then(({data}) => resolve(data.response))
+                .then(({data}) => {
+                    console.log(data.response);
+                    resolve(data.response)
+                })
                 .catch(err => reject(err.toString()));
         });
     });
@@ -152,7 +154,6 @@ const authMiddleware = (req, res, next) => {
     if (!isValidSession(sess, userAgent, ipAddr)) return res.status(400).end('Session is invalid.');
     let { dataBuffer, data } = decodeSession(sess);   
     let newSess = generateSession(dataBuffer, userAgent, ipAddr);
-
     if (Number(data[3])) {
         let user = {
             id: data[0],

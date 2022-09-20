@@ -81,14 +81,20 @@ const config = require('../services/config');
                     }
                 }
                 if (proxyRes.headers['content-type'] && proxyRes.headers['content-type'].includes('text/html')) {
+
                     let response = responseBuffer.toString('utf-8');
                     let $ = cheerio.load(response);   
                     $('.srf-header').css('display', 'block');
                     $('.srf-header .srf-navbar__right .srf-login-btn, .srf-header .srf-navbar__right .srf-register-btn').remove();
                     $('.srf-dropdown.srf-switch-locale-trigger').remove();
+                    
                     if (req.user.isAdmin) {
                         return $.html();
                     } else {// Remove the account information if client is normal user
+                        if (req.url == "/accounts/profile/account-info" || req.url == "/billing-admin/profile/subscription") {
+                            $('.srf-layout__sidebar, .srf-layout__body').remove();
+                            $('.srf-layout__footer').before("<h1 style='grid-area: footer; display: block; margin-top: -150px; text-align: center; font-size: 40px; color: #ff642d; font-weight: bold'>You can not access in this page.</h1>");
+                        }
                         $('.srf-navbar__right').remove();
                         return $.html();
                     }
