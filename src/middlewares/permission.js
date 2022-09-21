@@ -131,10 +131,9 @@ const getMembership = (uid, lid, siteUrl) => {
             }
             axios.get(`${siteUrl}/wp-content/plugins/indeed-membership-pro/apigate.php?ihch=${site.membershipApiKey}&action=verify_user_level&uid=${uid}&lid=${lid}`)
                 .then(({data}) => {
-                    console.log(data.response);
                     resolve(data.response)
                 })
-                .catch(err => reject(err.toString()));
+                .catch(err => resolve(0));
         });
     });
 };
@@ -164,13 +163,13 @@ const authMiddleware = (req, res, next) => {
         sessionMapper.set(`${site}-${user.id}`, newSess);
         res.cookie('sess', newSess, {
             path: '/',
-            domain: process.env.NODE_ENV === "development" ? undefined : process.env.DOMAIN
+            domain: process.env.NODE_ENV === "development" ? undefined : ".appserver.club"
         });
         res.cookie(
             'wpInfo',
             base64.encode(JSON.stringify({user: user, site})), {
                 path: '/',
-                domain: process.env.NODE_ENV === "development" ? undefined : process.env.DOMAIN
+                domain: process.env.NODE_ENV === "development" ? undefined : ".appserver.club"
             }
         );
         next();
@@ -185,13 +184,13 @@ const authMiddleware = (req, res, next) => {
             sessionMapper.set(`${site}-${user.id}`, newSess);
             res.cookie('sess', newSess, {
                 path: '/',
-                domain: process.env.NODE_ENV === "development" ? undefined : process.env.DOMAIN
+                domain: process.env.NODE_ENV === "development" ? undefined : ".appserver.club"
             });
             res.cookie(
                 'wpInfo',
                 base64.encode(JSON.stringify({user: user, site})), {
                     path: '/',
-                    domain: process.env.NODE_ENV === "development" ? undefined : process.env.DOMAIN
+                    domain: process.env.NODE_ENV === "development" ? undefined : ".appserver.club"
                 }
             );
             next();
